@@ -1,0 +1,13 @@
+GEM
+  specs:
+    rake (10.0.4)
+    rake-compiler (0.8.3)
+      rake
+    rubber-generate (0.0.18)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rake-compiler
+  rubber-generate

@@ -1,0 +1,4 @@
+lib/smb.so
+tmp/*
+pkg/*
+
