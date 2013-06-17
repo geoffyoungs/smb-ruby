@@ -66,7 +66,7 @@ static VALUE stat_new(struct stat *st)
 	nst = ALLOC(struct stat);
 	*nst = *st;
     }
-    return Data_Wrap_Struct(rb_cStat, NULL, free, nst);
+    return Data_Wrap_Struct(cStat, NULL, free, nst);
 }
 
 %}
@@ -198,6 +198,66 @@ module SMB
 			dir->handle = 0;
 		end
 	end
+
+  class Stat
+  pre_func struct stat *s; Data_Get_Struct(self, struct stat, s);
+    def bool:exist?
+      return (!!s);
+    end
+    def long:dev
+      return s->st_dev;
+    end
+    def long:ino
+      return s->st_ino;
+    end
+    def long:mode
+      return s->st_mode;
+    end
+    def long:nlink
+      return s->st_nlink;
+    end
+
+    def long:uid
+      return s->st_uid;
+    end
+    def long:gid
+      return s->st_gid;
+    end
+    def long:rdev
+       return s->st_rdev;
+    end
+
+    def long:blksize
+       return s->st_blksize;
+    end
+    def long:blocks
+       return s->st_blocks;
+    end
+
+    def long:size
+      return s->st_size;
+    end
+
+    def bool:directory?
+      return S_ISDIR(s->st_mode);
+    end
+    def bool:file?
+      return S_ISREG(s->st_mode);
+    end
+    def bool:regular?
+      return S_ISREG(s->st_mode);
+    end
+    def bool:symlink?
+      return S_ISLNK(s->st_mode);
+    end
+    def bool:fifo?
+      return S_ISFIFO(s->st_mode);
+    end
+  
+    def bool:zero?
+      return (s->st_size == 0);
+    end
+  end
 	
 	class File
 		def self.new(char *url, int flags, int mode)

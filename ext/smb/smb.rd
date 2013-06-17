@@ -48,6 +48,39 @@
 
 --- SMB::Dir#close
 
+== class SMB::Stat
+--- SMB::Stat#exist?
+
+--- SMB::Stat#dev
+
+--- SMB::Stat#ino
+
+--- SMB::Stat#mode
+
+--- SMB::Stat#nlink
+
+--- SMB::Stat#uid
+
+--- SMB::Stat#gid
+
+--- SMB::Stat#rdev
+
+--- SMB::Stat#blksize
+
+--- SMB::Stat#blocks
+
+--- SMB::Stat#size
+
+--- SMB::Stat#directory?
+
+--- SMB::Stat#file?
+
+--- SMB::Stat#regular?
+
+--- SMB::Stat#symlink?
+
+--- SMB::Stat#fifo?
+
 == class SMB::File
 --- SMB::File.new(String url, Integer flags, Integer mode)
 

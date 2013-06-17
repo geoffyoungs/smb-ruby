@@ -111,7 +111,11 @@ static VALUE rubber_enum_cmp(VALUE value, VALUE other)
 	VALUE a,b;
 	a = rb_funcall(value, rb_intern("to_i"), 0);
 	b = rb_funcall(other, rb_intern("to_i"), 0);
+#ifdef RB_NUM_COERCE_FUNCS_NEED_OPID
+	return rb_num_coerce_cmp(a, b, rb_intern("=="));
+#else
 	return rb_num_coerce_cmp(a, b);
+#endif
 }
 
 static VALUE rubber_enum_to_i(VALUE value)
@@ -210,6 +214,39 @@ static VALUE
 Dir_url(VALUE self);
 static VALUE
 Dir_close(VALUE self);
+static VALUE cStat;
+static VALUE
+Stat_exist_query(VALUE self);
+static VALUE
+Stat_dev(VALUE self);
+static VALUE
+Stat_ino(VALUE self);
+static VALUE
+Stat_mode(VALUE self);
+static VALUE
+Stat_nlink(VALUE self);
+static VALUE
+Stat_uid(VALUE self);
+static VALUE
+Stat_gid(VALUE self);
+static VALUE
+Stat_rdev(VALUE self);
+static VALUE
+Stat_blksize(VALUE self);
+static VALUE
+Stat_blocks(VALUE self);
+static VALUE
+Stat_size(VALUE self);
+static VALUE
+Stat_directory_query(VALUE self);
+static VALUE
+Stat_file_query(VALUE self);
+static VALUE
+Stat_regular_query(VALUE self);
+static VALUE
+Stat_symlink_query(VALUE self);
+static VALUE
+Stat_fifo_query(VALUE self);
 static VALUE cFile;
 static VALUE
 File_CLASS_new(VALUE self, VALUE __v_url, VALUE __v_flags, VALUE __v_mode);
@@ -246,8 +283,8 @@ File_CLASS_read(VALUE self, VALUE __v_url);
 static volatile VALUE auth_block = Qnil;
 
 static void smbc_get_auth_data(const char *srv, const char *shr, 
-	char *wg, int wglen, 
-	char *un, int unlen, 
+	char *wg, int wglen,
+	char *un, int unlen,
 	char *pw, int pwlen)
 {
 	volatile VALUE ret= Qnil;
@@ -301,7 +338,7 @@ static VALUE stat_new(struct stat *st)
 	nst = ALLOC(struct stat);
 	*nst = *st;
     }
-    return Data_Wrap_Struct(rb_cStat, NULL, free, nst);
+    return Data_Wrap_Struct(cStat, NULL, free, nst);
 }
 
 
@@ -348,7 +385,7 @@ SMB_CLASS_init(int __p_argc, VALUE *__p_argv, VALUE self)
     debug = 0;
 
 
-#line 130 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 129 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   auth_block = block;
   rb_gc_register_address(&auth_block);
   if (smbc_init(smbc_get_auth_data, debug) < 0) { rb_sys_fail("smbc_init failed");
@@ -378,8 +415,7 @@ CTX_CLASS___alloc__(VALUE self)
   SMBCCTX * ctx  =
  smbc_new_context();
   volatile VALUE  obj  ;
- rb_p(self);
-  obj = Data_Wrap_Struct(self, NULL, smbc_free_context, ctx);
+ obj = Data_Wrap_Struct(self, NULL, smbc_free_context, ctx);
   do { __p_retval = obj; goto out; } while(0);
 
   } while(0);
@@ -393,7 +429,7 @@ CTX_initialize(VALUE self)
 {
 SMBCCTX *ctx; Data_Get_Struct(self, SMBCCTX, ctx);
 
-#line 100 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 99 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   smbc_init_context(ctx);
  
   return Qnil;
@@ -421,7 +457,7 @@ SMBCCTX *ctx; Data_Get_Struct(self, SMBCCTX, ctx);
     mode = 0666;
 
 
-#line 106 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 105 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   volatile VALUE  rfile  ;
@@ -465,7 +501,7 @@ SMBCCTX *ctx; Data_Get_Struct(self, SMBCCTX, ctx);
     mode = 0666;
 
 
-#line 112 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 111 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   volatile VALUE  rfile  ;
@@ -488,7 +524,7 @@ SMBCCTX *ctx; Data_Get_Struct(self, SMBCCTX, ctx);
   Check_Type(sfile, T_DATA);
   Check_Type(data, T_STRING);
 
-#line 118 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 117 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   SMBCFILE * file  ;
@@ -508,7 +544,7 @@ CTX_file_close(VALUE self, VALUE sfile)
 SMBCCTX *ctx; Data_Get_Struct(self, SMBCCTX, ctx);
   Check_Type(sfile, T_DATA);
 
-#line 123 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 122 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   SMBCFILE * file  ;
@@ -528,7 +564,7 @@ Dir_CLASS_new(VALUE self, VALUE __v_url)
   char * url; char * __orig_url;
   __orig_url = url = ( NIL_P(__v_url) ? NULL : StringValuePtr(__v_url) );
 
-#line 145 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 144 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   volatile VALUE  val  ;
@@ -552,7 +588,7 @@ Dir_CLASS_rmdir(VALUE self, VALUE __v_url)
   char * url; char * __orig_url;
   __orig_url = url = ( NIL_P(__v_url) ? NULL : StringValuePtr(__v_url) );
 
-#line 161 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 160 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   if (smbc_rmdir(url) < 0) rb_sys_fail(url);
  
   return Qnil;
@@ -566,7 +602,7 @@ Dir_CLASS_mkdir(VALUE self, VALUE __v_url, VALUE __v_mode)
   __orig_url = url = ( NIL_P(__v_url) ? NULL : StringValuePtr(__v_url) );
   __orig_mode = mode = NUM2INT(__v_mode);
 
-#line 165 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 164 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   if (smbc_mkdir(url, mode) < 0) rb_sys_fail(url);
  
   return Qnil;
@@ -577,7 +613,7 @@ Dir_initialize(VALUE self)
 {
 rb_smbprivate *dir; Data_Get_Struct(self, rb_smbprivate, dir);
 
-#line 172 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 171 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   
   return Qnil;
 }
@@ -588,7 +624,7 @@ Dir_read_entry(VALUE self)
   VALUE __p_retval = Qnil;
 rb_smbprivate *dir; Data_Get_Struct(self, rb_smbprivate, dir);
 
-#line 174 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 173 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   struct smbc_dirent*  de  ;
@@ -607,7 +643,7 @@ Dir_read(VALUE self)
   VALUE __p_retval = Qnil;
 rb_smbprivate *dir; Data_Get_Struct(self, rb_smbprivate, dir);
 
-#line 185 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 184 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   struct smbc_dirent*  de  ;
@@ -626,7 +662,7 @@ Dir_tell(VALUE self)
   VALUE __p_retval = Qnil;
 rb_smbprivate *dir; Data_Get_Struct(self, rb_smbprivate, dir);
 
-#line 191 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 190 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   do { __p_retval =  INT2NUM(smbc_telldir(dir->handle)); goto out; } while(0);
 out:
   return __p_retval;
@@ -638,7 +674,7 @@ Dir_url(VALUE self)
   VALUE __p_retval = Qnil;
 rb_smbprivate *dir; Data_Get_Struct(self, rb_smbprivate, dir);
 
-#line 194 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 193 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   do { __p_retval =  rb_str_new2(dir->url); goto out; } while(0);
 out:
   return __p_retval;
@@ -649,11 +685,203 @@ Dir_close(VALUE self)
 {
 rb_smbprivate *dir; Data_Get_Struct(self, rb_smbprivate, dir);
 
-#line 197 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 196 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   smbc_closedir(dir->handle);
   dir->handle = 0;
  
   return Qnil;
+}
+
+static VALUE
+Stat_exist_query(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 204 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  (((!!s)) ? Qtrue : Qfalse); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_dev(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 207 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_dev); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_ino(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 210 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_ino); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_mode(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 213 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_mode); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_nlink(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 216 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_nlink); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_uid(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 220 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_uid); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_gid(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 223 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_gid); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_rdev(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 226 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_rdev); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_blksize(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 230 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_blksize); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_blocks(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 233 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_blocks); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_size(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 237 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  LONG2NUM(s->st_size); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_directory_query(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 241 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  ((S_ISDIR(s->st_mode)) ? Qtrue : Qfalse); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_file_query(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 244 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  ((S_ISREG(s->st_mode)) ? Qtrue : Qfalse); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_regular_query(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 247 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  ((S_ISREG(s->st_mode)) ? Qtrue : Qfalse); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_symlink_query(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 250 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  ((S_ISLNK(s->st_mode)) ? Qtrue : Qfalse); goto out; } while(0);
+out:
+  return __p_retval;
+}
+
+static VALUE
+Stat_fifo_query(VALUE self)
+{
+  VALUE __p_retval = Qnil;
+struct stat *s; Data_Get_Struct(self, struct stat, s);
+
+#line 253 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+  do { __p_retval =  ((S_ISFIFO(s->st_mode)) ? Qtrue : Qfalse); goto out; } while(0);
+out:
+  return __p_retval;
 }
 
 static VALUE
@@ -667,7 +895,7 @@ File_CLASS_new(VALUE self, VALUE __v_url, VALUE __v_flags, VALUE __v_mode)
   __orig_flags = flags = NUM2INT(__v_flags);
   __orig_mode = mode = NUM2INT(__v_mode);
 
-#line 204 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 259 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   volatile VALUE  val  ;
@@ -696,7 +924,7 @@ File_CLASS_create(VALUE self, VALUE __v_url, VALUE __v_mode)
   __orig_url = url = ( NIL_P(__v_url) ? NULL : StringValuePtr(__v_url) );
   __orig_mode = mode = NUM2INT(__v_mode);
 
-#line 222 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 277 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   volatile VALUE  val  ;
@@ -722,7 +950,7 @@ File_CLASS_unlink(VALUE self, VALUE __v_url)
   char * url; char * __orig_url;
   __orig_url = url = ( NIL_P(__v_url) ? NULL : StringValuePtr(__v_url) );
 
-#line 240 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 295 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   if (smbc_unlink(url) < 0) rb_sys_fail(url);
  
   return Qnil;
@@ -736,7 +964,7 @@ File_CLASS_rename(VALUE self, VALUE __v_ourl, VALUE __v_nurl)
   __orig_ourl = ourl = ( NIL_P(__v_ourl) ? NULL : StringValuePtr(__v_ourl) );
   __orig_nurl = nurl = ( NIL_P(__v_nurl) ? NULL : StringValuePtr(__v_nurl) );
 
-#line 244 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 299 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   if (smbc_rename(ourl, nurl) < 0) rb_sys_fail(ourl);
  
   return Qnil;
@@ -749,7 +977,7 @@ File_CLASS_stat(VALUE self, VALUE __v_url)
   char * url; char * __orig_url;
   __orig_url = url = ( NIL_P(__v_url) ? NULL : StringValuePtr(__v_url) );
 
-#line 248 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 303 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   struct stat  s  ;
@@ -767,7 +995,7 @@ File_initialize(VALUE self)
 {
 rb_smbprivate *file; Data_Get_Struct(self, rb_smbprivate, file);
 
-#line 257 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 312 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   
   return Qnil;
 }
@@ -778,7 +1006,7 @@ File_stat(VALUE self)
   VALUE __p_retval = Qnil;
 rb_smbprivate *file; Data_Get_Struct(self, rb_smbprivate, file);
 
-#line 259 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 314 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   struct stat  s  ;
@@ -797,7 +1025,7 @@ File_url(VALUE self)
   VALUE __p_retval = Qnil;
 rb_smbprivate *file; Data_Get_Struct(self, rb_smbprivate, file);
 
-#line 265 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 320 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   do { __p_retval =  rb_str_new2(file->url); goto out; } while(0);
 out:
   return __p_retval;
@@ -813,7 +1041,7 @@ rb_smbprivate *file; Data_Get_Struct(self, rb_smbprivate, file);
   __orig_offset = offset = NUM2OFFT(__v_offset);
   __orig_whence = whence = NUM2INT(__v_whence);
 
-#line 268 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 323 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   do { __p_retval = INT2NUM(smbc_lseek(file->handle, offset, whence)); goto out; } while(0);
 out:
 ;
@@ -838,7 +1066,7 @@ rb_smbprivate *file; Data_Get_Struct(self, rb_smbprivate, file);
     bytes_to_read = -1;
 
 
-#line 271 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 326 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   size_t  read  ;
@@ -872,7 +1100,7 @@ File_write(VALUE self, VALUE buf)
 rb_smbprivate *file; Data_Get_Struct(self, rb_smbprivate, file);
   Check_Type(buf, T_STRING);
 
-#line 308 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 363 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   int  i  ;
@@ -892,7 +1120,7 @@ File_close(VALUE self)
 {
 rb_smbprivate *file; Data_Get_Struct(self, rb_smbprivate, file);
 
-#line 316 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 371 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
   smbc_close(file->handle);
   file->handle = 0;
  
@@ -906,7 +1134,7 @@ File_CLASS_read(VALUE self, VALUE __v_url)
   char * url; char * __orig_url;
   __orig_url = url = ( NIL_P(__v_url) ? NULL : StringValuePtr(__v_url) );
 
-#line 321 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
+#line 376 "/home/geoff/Projects/smb-ruby/ext/smb/smb.cr"
 
   do {
   size_t  read  ;
@@ -1002,6 +1230,23 @@ rb_gc_register_address(&_gcpool_Credentials);
   rb_define_method(cDir, "tell", Dir_tell, 0);
   rb_define_method(cDir, "url", Dir_url, 0);
   rb_define_method(cDir, "close", Dir_close, 0);
+  cStat = rb_define_class_under(mSMB, "Stat", rb_cObject);
+  rb_define_method(cStat, "exist?", Stat_exist_query, 0);
+  rb_define_method(cStat, "dev", Stat_dev, 0);
+  rb_define_method(cStat, "ino", Stat_ino, 0);
+  rb_define_method(cStat, "mode", Stat_mode, 0);
+  rb_define_method(cStat, "nlink", Stat_nlink, 0);
+  rb_define_method(cStat, "uid", Stat_uid, 0);
+  rb_define_method(cStat, "gid", Stat_gid, 0);
+  rb_define_method(cStat, "rdev", Stat_rdev, 0);
+  rb_define_method(cStat, "blksize", Stat_blksize, 0);
+  rb_define_method(cStat, "blocks", Stat_blocks, 0);
+  rb_define_method(cStat, "size", Stat_size, 0);
+  rb_define_method(cStat, "directory?", Stat_directory_query, 0);
+  rb_define_method(cStat, "file?", Stat_file_query, 0);
+  rb_define_method(cStat, "regular?", Stat_regular_query, 0);
+  rb_define_method(cStat, "symlink?", Stat_symlink_query, 0);
+  rb_define_method(cStat, "fifo?", Stat_fifo_query, 0);
   cFile = rb_define_class_under(mSMB, "File", rb_cObject);
   rb_define_singleton_method(cFile, "new", File_CLASS_new, 3);
   rb_define_singleton_method(cFile, "create", File_CLASS_create, 2);
